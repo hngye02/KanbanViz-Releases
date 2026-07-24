@@ -1,9 +1,9 @@
 {
   "name": "kanbanviz-canvas-extension",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
-  "main": "extension.mjs",
+  "main": "canvas/extension.mjs",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
