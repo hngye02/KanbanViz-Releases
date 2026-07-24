@@ -1,11 +1,23 @@
-# KanbanViz Releases
+# KanbanViz Copilot plugin marketplace
 
-This public repository contains binary-only Windows releases of KanbanViz. The application source remains private.
+This repository hosts the public KanbanViz plugin catalog and versioned Windows release assets.
 
-After the WinGet community submission is approved, install with:
+## Install
 
 ```powershell
-winget install --id GimHome.KanbanViz --exact
+copilot plugin marketplace add hngye02/KanbanViz-Releases
+copilot plugin install kanbanviz@kanbanviz
 ```
 
-Until code signing is configured, Windows SmartScreen may warn before running the installer.
+Restart the GitHub Copilot app, start a new session, and open the **KanbanViz** Canvas. The first
+launch downloads `KanbanViz-Canvas-Server-0.2.1-win-x64.zip`, verifies its SHA256 from the signed plugin manifest, installs
+it under `%LOCALAPPDATA%\KanbanViz\canvas-extension\runtimes\`, and starts the loopback-only server.
+
+## Update
+
+```powershell
+copilot plugin marketplace update kanbanviz
+copilot plugin update kanbanviz@kanbanviz
+```
+
+Plugin version: `0.2.1`
