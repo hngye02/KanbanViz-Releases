@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "runtime": "win-x64",
-  "assetUrl": "https://github.com/hngye02/KanbanViz-Releases/releases/download/v0.2.2/KanbanViz-Canvas-Server-0.2.2-win-x64.zip",
-  "sha256": "E51F63C90977AB7F51628AC53CBC2581A1B971D49CE0DEF582DDADEBDA27B6DB"
+  "assetUrl": "https://github.com/hngye02/KanbanViz-Releases/releases/download/v0.2.3/KanbanViz-Canvas-Server-0.2.3-win-x64.zip",
+  "sha256": "BDFC71256CE0AA862DF95A0FDDED9907F14EC3EF72C081864441BA731FA99B6D"
 }
