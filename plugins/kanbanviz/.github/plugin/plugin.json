@@ -1,7 +1,7 @@
 {
   "name": "kanbanviz",
-  "description": "Explore local GitHub Copilot CLI sessions, boards, search results, and insights in a Copilot Canvas.",
-  "version": "0.2.3",
+  "description": "See sessions that need attention, scan compact repository boards, and search local Copilot work.",
+  "version": "0.2.4",
   "author": {
     "name": "gim-home",
     "url": "https://github.com/hngye02/KanbanViz-Releases"

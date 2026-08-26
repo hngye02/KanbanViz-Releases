@@ -372,8 +372,8 @@ const canvas = createCanvas({
   id: "kanbanviz",
   displayName: "KanbanViz",
   description:
-    "Visualize local GitHub Copilot CLI sessions by repository, search them, "
-    + "and inspect continuous or deep insights.",
+    "See sessions that need attention, scan compact repository boards, "
+    + "search local Copilot work, and inspect saved report summaries.",
   open: async (context) => {
     const [health, repository] = await Promise.all([
       probeHealth(),
