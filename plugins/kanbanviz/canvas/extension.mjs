@@ -9,6 +9,8 @@ import {
   joinSession,
 } from "@github/copilot-sdk/extension";
 import { createBootstrapServer } from "./bootstrap-server.mjs";
+import { createCanvasActions } from "./agent-actions.mjs";
+import { createAgentBridge } from "./agent-bridge.mjs";
 import {
   ensureRuntimeInstalled,
   RuntimeInstallError,
@@ -24,6 +26,7 @@ const HEALTH_REQUEST_TIMEOUT_MS = 1_500;
 const STARTUP_TIMEOUT_MS = 30_000;
 const STARTUP_POLL_INTERVAL_MS = 250;
 const GIT_TIMEOUT_MS = 1_500;
+const CANVAS_ORIGIN = BASE_URL;
 
 const extensionDirectory = dirname(fileURLToPath(import.meta.url));
 const packagedServerExecutable = join(
@@ -34,6 +37,7 @@ const packagedServerExecutable = join(
 
 let startupPromise = null;
 let bootstrapPromise = null;
+let joinedSession = null;
 let startupStatus = {
   phase: "checking",
   message: "Checking the local KanbanViz server...",
@@ -359,51 +363,75 @@ async function inferRepository(context) {
   }
 }
 
-function applicationUrl(repository) {
+function applicationUrl(repository, agentConfig) {
   const url = new URL(BASE_URL);
   url.searchParams.set("canvas", "1");
   if (repository) {
     url.searchParams.set("repository", repository);
   }
+  url.searchParams.set("canvasAgentBridge", agentConfig.bridgeUrl);
+  url.searchParams.set("canvasAgentInstance", agentConfig.instanceId);
+  url.searchParams.set("canvasAgentToken", agentConfig.token);
   return url.toString();
 }
+
+const agentBridge = await createAgentBridge({
+  allowedOrigin: CANVAS_ORIGIN,
+  getSession: () => joinedSession,
+});
 
 const canvas = createCanvas({
   id: "kanbanviz",
   displayName: "KanbanViz",
   description:
-    "See sessions that need attention, scan compact repository boards, "
-    + "search local Copilot work, and inspect saved report summaries.",
+    "See sessions that need attention, scan repository boards and Work Graphs, "
+    + "select work for Copilot, and inspect bounded session summaries.",
+  actions: createCanvasActions({
+    getInstance: (instanceId) => agentBridge.getInstance(instanceId),
+    baseUrl: BASE_URL,
+  }),
   open: async (context) => {
-    const [health, repository] = await Promise.all([
-      probeHealth(),
-      inferRepository(context),
-    ]);
-    const targetUrl = applicationUrl(repository);
+    const agentConfig = agentBridge.registerInstance(context.instanceId);
+    try {
+      const [health, repository] = await Promise.all([
+        probeHealth(),
+        inferRepository(context),
+      ]);
+      const targetUrl = applicationUrl(repository, agentConfig);
 
-    if (health.kind === "ready") {
+      if (health.kind === "ready") {
+        return {
+          title: repository ? `KanbanViz - ${repository}` : "KanbanViz",
+          url: targetUrl,
+          status: "ready",
+        };
+      }
+      if (health.kind === "incompatible") {
+        throw new CanvasError(
+          "kanbanviz_incompatible_server",
+          `${health.message} Stop the process using port 5364 and try again.`,
+        );
+      }
+
+      const url = await bootstrapUrl(targetUrl);
+      kickOffServerStartup();
+
       return {
         title: repository ? `KanbanViz - ${repository}` : "KanbanViz",
-        url: targetUrl,
+        url,
         status: "ready",
       };
+    } catch (error) {
+      agentBridge.closeInstance(context.instanceId);
+      throw error;
     }
-    if (health.kind === "incompatible") {
-      throw new CanvasError(
-        "kanbanviz_incompatible_server",
-        `${health.message} Stop the process using port 5364 and try again.`,
-      );
-    }
-
-    const url = await bootstrapUrl(targetUrl);
-    kickOffServerStartup();
-
-    return {
-      title: repository ? `KanbanViz - ${repository}` : "KanbanViz",
-      url,
-      status: "ready",
-    };
+  },
+  onClose: (context) => {
+    agentBridge.closeInstance(context.instanceId);
   },
 });
 
-await joinSession({ canvases: [canvas] });
+joinedSession = await joinSession({ canvases: [canvas] });
+joinedSession.on("user.message", () => agentBridge.setSessionBusy(true));
+joinedSession.on("assistant.turn_start", () => agentBridge.setSessionBusy(true));
+joinedSession.on("session.idle", () => agentBridge.setSessionBusy(false));

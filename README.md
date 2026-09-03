@@ -10,7 +10,7 @@ copilot plugin install kanbanviz@kanbanviz
 ```
 
 Restart the GitHub Copilot app, start a new session, and open the **KanbanViz** Canvas. The first
-launch downloads `KanbanViz-Canvas-Server-0.2.4-win-x64.zip`, verifies its SHA256 from the signed plugin manifest, installs
+launch downloads `KanbanViz-Canvas-Server-0.2.5-win-x64.zip`, verifies its SHA256 from the signed plugin manifest, installs
 it under `%LOCALAPPDATA%\KanbanViz\canvas-extension\runtimes\`, and starts the loopback-only server.
 
 ## Update
@@ -20,4 +20,4 @@ copilot plugin marketplace update kanbanviz
 copilot plugin update kanbanviz@kanbanviz
 ```
 
-Plugin version: `0.2.4`
+Plugin version: `0.2.5`
