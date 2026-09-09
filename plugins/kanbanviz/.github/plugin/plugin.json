@@ -1,7 +1,7 @@
 {
   "name": "kanbanviz",
   "description": "Inspect session priorities, select work for Copilot, and explore repository boards and Work Graphs.",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "author": {
     "name": "gim-home",
     "url": "https://github.com/hngye02/KanbanViz-Releases"

@@ -20,6 +20,7 @@ const execFileAsync = promisify(execFile);
 
 const PRODUCT_ID = "KanbanViz";
 const EXTENSION_API_VERSION = "1.0";
+const MINIMUM_SERVER_VERSION = [0, 2, 6];
 const BASE_URL = "http://127.0.0.1:5364";
 const HEALTH_URL = `${BASE_URL}/api/extension/health`;
 const HEALTH_REQUEST_TIMEOUT_MS = 1_500;
@@ -75,6 +76,20 @@ function isCompatibleHealth(payload) {
   );
 }
 
+function supportsServerVersion(version) {
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:\.\d+)?$/.test(version)) {
+    return false;
+  }
+  const parts = version.split(".").map(Number);
+  if (!parts.every(Number.isSafeInteger)) return false;
+  for (let index = 0; index < MINIMUM_SERVER_VERSION.length; index += 1) {
+    if (parts[index] !== MINIMUM_SERVER_VERSION[index]) {
+      return parts[index] > MINIMUM_SERVER_VERSION[index];
+    }
+  }
+  return true;
+}
+
 async function probeHealth() {
   const controller = new AbortController();
   const timer = setTimeout(
@@ -118,6 +133,16 @@ async function probeHealth() {
         message:
           `Port 5364 is serving ${product} extension API ${apiVersion}; `
           + `KanbanViz Canvas requires ${PRODUCT_ID} extension API ${EXTENSION_API_VERSION}.`,
+      };
+    }
+
+    if (!supportsServerVersion(payload.applicationVersion)) {
+      return {
+        kind: "incompatible",
+        message:
+          `The running KanbanViz server is version ${payload.applicationVersion ?? "unknown"}; `
+          + `This Canvas requires ${MINIMUM_SERVER_VERSION.join(".")} or newer. `
+          + "Update KanbanViz and restart its server before reopening the Canvas.",
       };
     }
 
