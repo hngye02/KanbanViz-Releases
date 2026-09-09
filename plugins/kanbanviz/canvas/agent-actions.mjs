@@ -752,11 +752,11 @@ export function createCanvasActions({
     {
       name: "focus_canvas",
       description:
-        "Focus this Canvas instance on an overview, repository board, repository graph, session, search, or board lane.",
+        "Focus this Canvas instance on an overview, repository board, repository graph, all-repositories work-graph, session, search, or board lane.",
       inputSchema: objectSchema({
         target: {
           type: "string",
-          enum: ["overview", "repository", "graph", "session", "search", "lane"],
+          enum: ["overview", "repository", "graph", "work-graph", "session", "search", "lane"],
         },
         repository: { ...optionalRepository, type: ["string", "null"] },
         sessionId: { type: "string", minLength: 1, maxLength: 128 },
@@ -782,7 +782,13 @@ export function createCanvasActions({
           : null;
         const command = { target: input.target };
 
-        if (input.target === "repository" || input.target === "graph") {
+        if (input.target === "work-graph") {
+          instance.updateContext({
+            view: "work-graph",
+            repository: null,
+            sessionId: null,
+          });
+        } else if (input.target === "repository" || input.target === "graph") {
           const repository = input.repository ?? current?.repository;
           const normalizedRepository = assertString(repository, "repository");
           command.repository = normalizedRepository;

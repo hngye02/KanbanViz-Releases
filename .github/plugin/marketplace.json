@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Official KanbanViz plugins for GitHub Copilot.",
-    "version": "0.2.6"
+    "version": "0.2.7"
   },
   "plugins": [
     {
       "name": "kanbanviz",
       "source": "plugins/kanbanviz",
-      "description": "Inspect session priorities, select work for Copilot, and explore repository boards and Work Graphs.",
-      "version": "0.2.6",
+      "description": "Inspect session priorities, select work for Copilot, and explore repository boards and all-repositories Work Graphs.",
+      "version": "0.2.7",
       "author": {
         "name": "gim-home",
         "url": "https://github.com/hngye02/KanbanViz-Releases"

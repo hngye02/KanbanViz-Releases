@@ -14,7 +14,7 @@ const ALLOWED_INTENTS = new Set([
   "explain_search_results",
   "refine_search",
 ]);
-const VIEWS = new Set(["overview", "repository", "session", "search"]);
+const VIEWS = new Set(["overview", "repository", "work-graph", "session", "search"]);
 const GROUP_DIMENSIONS = new Set([
   "recency",
   "workType",
